@@ -78,7 +78,6 @@ form_desc <- function(x, form, lhs_must_appear = FALSE) {
     ft[[dt_list_elem]] <- c(ft[[dt_list_elem]][-dt], 
       setdiff(colnames(x), setdiff(unlist(ft), ".")))
   }
-  browser()
   if (lhs_must_appear) {
     check_vars <- unlist(ft)
   } else {
