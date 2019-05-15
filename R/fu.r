@@ -63,9 +63,11 @@ lh_terms <- function(form, data = NULL) {
 #'
 #' @param x a data.frame.
 #' @param form a formula object.
+#' @param lhs_must_appear should we stop if an lhs variable doesn't appear in 
+#' the data? Default FALSE.
 #' @importFrom crayon red
 #' @export
-form_desc <- function(x, form) {
+form_desc <- function(x, form, lhs_must_appear = FALSE) {
   ft <- c(list(lh_terms=lh_terms(form, x)), rh_terms(form, x))
   if (isTRUE(any(duplicated(unlist(ft))))) {
     stop(red("Variables may not be apear more than once"))
@@ -76,9 +78,14 @@ form_desc <- function(x, form) {
     ft[[dt_list_elem]] <- c(ft[[dt_list_elem]][-dt], 
       setdiff(colnames(x), setdiff(unlist(ft), ".")))
   }
+  if (lhs_must_appear) {
+    check_vars <- unlist(ft)
+  } else {
+    check_vars <- unlist(c(ft$indep, ft$cond))
+  }
   if (isTRUE(!all(unlist(ft) %in% colnames(x)))) {
-    stop(red("The following formula variables do not appear in data set.\n\t", 
-             paste(setdiff(unlist(ft), colnames(x)), collapse = "\n\t"),
+    stop(red("The following formula variables do not appear in data set.\n\t",
+             paste(setdiff(check_vars, colnames(x)), collapse = "\n\t"),
              sep = ""))
   }
   ft

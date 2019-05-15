@@ -4,12 +4,15 @@
 \alias{form_desc}
 \title{Get a Description of a formula Object}
 \usage{
-form_desc(x, form)
+form_desc(x, form, lhs_must_appear = FALSE)
 }
 \arguments{
 \item{x}{a data.frame.}
 
 \item{form}{a formula object.}
+
+\item{lhs_must_appear}{should we stop if an lhs variable doesn't appear in 
+the data? Default FALSE.}
 }
 \description{
 Get a Description of a formula Object
