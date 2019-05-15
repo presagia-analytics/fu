@@ -78,12 +78,13 @@ form_desc <- function(x, form, lhs_must_appear = FALSE) {
     ft[[dt_list_elem]] <- c(ft[[dt_list_elem]][-dt], 
       setdiff(colnames(x), setdiff(unlist(ft), ".")))
   }
+  browser()
   if (lhs_must_appear) {
     check_vars <- unlist(ft)
   } else {
     check_vars <- unlist(c(ft$indep, ft$cond))
   }
-  if (isTRUE(!all(unlist(ft) %in% colnames(x)))) {
+  if (isTRUE(!all(check_vars%in% colnames(x)))) {
     stop(red("The following formula variables do not appear in data set.\n\t",
              paste(setdiff(check_vars, colnames(x)), collapse = "\n\t"),
              sep = ""))
