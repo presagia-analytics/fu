@@ -23,6 +23,9 @@ rh_terms <- function(form, data = NULL) {
   } else {
     ret <- list(indep = ret, cond = NULL)
   }
+  if (attributes(terms(form, data = data))$intercept == 0) {
+    ret$indep <- c(ret$indep, "-1")
+  }
   ret
 }
 
@@ -49,7 +52,7 @@ cond_terms <- function(form, data = NULL) {
 #' @param formula the formula to extract the right hand terms from.
 #' @param data an associated data set. Default NULL (no dataset)
 #' @export
-lh_terms <- function(form, data = NULL) {
+dep_terms <- function(form, data = NULL) {
   ret <- NULL
   facs <- attributes(terms(form, data = data))$factors
   if (nrow(facs) > ncol(facs)) {
@@ -68,7 +71,7 @@ lh_terms <- function(form, data = NULL) {
 #' @importFrom crayon red
 #' @export
 form_desc <- function(x, form, lhs_must_appear = FALSE) {
-  ft <- c(list(lh_terms=lh_terms(form, x)), rh_terms(form, x))
+  ft <- c(list(dep = dep_terms(form, x)), rh_terms(form, x))
   if (isTRUE(any(duplicated(unlist(ft))))) {
     stop(red("Variables may not be apear more than once"))
   }
@@ -89,6 +92,34 @@ form_desc <- function(x, form, lhs_must_appear = FALSE) {
              sep = ""))
   }
   ft
+}
+
+#' Expand a Formula with a dot
+#'
+#' @param x the data set.
+#' @param form the formula.
+#' @importFrom crayon red 
+#' @export
+expand_formula <- function(x, form) {
+  ft <- form_desc(x, form)
+  ret <- paste(ft$dep, "~", paste(ft$indep, collapse = " + "))
+  if (!is.null(ft$cond)) {
+    ret <- paste(ret, " | ", paste(ft$cond, collapse = " + "))
+  }
+  as.formula(ret)
+}
+
+#' Make a formula
+#'
+#' @param dep_vars the dependent variables.
+#' @param indep_vars the independent variables.
+#' @param cond_vars the conditional variables. (Default NULL - none)
+#' @export
+make_formula <- function(dep_vars, indep_vars, cond_vars = NULL) {
+  ret <- paste(dep_vars, "~", paste(indep_vars, collapse = " + "))
+  if (!is.null(cond_vars)) {
+    ret <- paste(ret, "|", cond_vars)
+  }  
 }
 
 
