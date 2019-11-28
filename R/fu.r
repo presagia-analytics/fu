@@ -55,11 +55,8 @@ cond_terms <- function(form, data = NULL) {
 dep_terms <- function(form, data = NULL) {
   ret <- NULL
   facs <- attributes(terms(form, data = data))$factors
-  if (nrow(facs) > ncol(facs)) {
-    lht_all <- rownames(attributes(terms(form, data = data))$factors)[1]
-    ret <- all.vars(parse(text = lht_all))
-  }
-  ret
+  lht_all <- rownames(attributes(terms(form, data = data))$factors)[1]
+  all.vars(parse(text = lht_all))
 }
 
 un_interact <- function(x) {
