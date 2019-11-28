@@ -62,6 +62,10 @@ dep_terms <- function(form, data = NULL) {
   ret
 }
 
+un_interact <- function(x) {
+  unique(unlist(strsplit(x, ":")))
+}
+
 #' Get a Description of a formula Object
 #'
 #' @param x a data.frame.
@@ -86,7 +90,7 @@ form_desc <- function(x, form, lhs_must_appear = FALSE) {
   } else {
     check_vars <- unlist(c(ft$indep, ft$cond))
   }
-  if (isTRUE(!all(check_vars%in% colnames(x)))) {
+  if (isTRUE(!all(un_interact(check_vars) %in% colnames(x)))) {
     stop(red("The following formula variables do not appear in data set.\n\t",
              paste(setdiff(check_vars, colnames(x)), collapse = "\n\t"),
              sep = ""))
@@ -120,6 +124,7 @@ make_formula <- function(dep_vars, indep_vars, cond_vars = NULL) {
   if (!is.null(cond_vars)) {
     ret <- paste(ret, "|", cond_vars)
   }  
+  ret
 }
 
 
