@@ -121,7 +121,7 @@ make_formula <- function(dep_vars, indep_vars, cond_vars = NULL) {
   if (!is.null(cond_vars)) {
     ret <- paste(ret, "|", cond_vars)
   }  
-  ret
+  as.formula(ret)
 }
 
 
