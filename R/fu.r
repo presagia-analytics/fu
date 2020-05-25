@@ -54,9 +54,13 @@ cond_terms <- function(form, data = NULL) {
 #' @export
 dep_terms <- function(form, data = NULL) {
   ret <- NULL
-  facs <- attributes(terms(form, data = data))$factors
-  lht_all <- rownames(attributes(terms(form, data = data))$factors)[1]
-  all.vars(parse(text = lht_all))
+  fa <- attributes(terms(form, data = data))
+  if (fa$response == 1) {
+    facs <- fa$factors
+    lht_all <- rownames(attributes(terms(form, data = data))$factors)[1]
+    ret <- all.vars(parse(text = lht_all))
+  }
+  ret
 }
 
 un_interact <- function(x) {
@@ -69,9 +73,12 @@ un_interact <- function(x) {
 #' @param form a formula object.
 #' @param lhs_must_appear should we stop if an lhs variable doesn't appear in 
 #' the data? Default FALSE.
+#' @param exclude_intercept should the intercept be included as a variable 
+#' to check? Default FALSE.
 #' @importFrom crayon red
 #' @export
-form_desc <- function(x, form, lhs_must_appear = FALSE) {
+form_desc <- function(x, form, lhs_must_appear = FALSE, 
+                      exclude_intercept = TRUE) {
   ft <- c(list(dep = dep_terms(form, x)), rh_terms(form, x))
   if (isTRUE(any(duplicated(unlist(ft))))) {
     stop(red("Variables may not be apear more than once"))
@@ -87,7 +94,9 @@ form_desc <- function(x, form, lhs_must_appear = FALSE) {
   } else {
     check_vars <- unlist(c(ft$indep, ft$cond))
   }
+  check_vars <- setdiff(check_vars, "-1")
   if (isTRUE(!all(un_interact(check_vars) %in% colnames(x)))) {
+    d <- setdiff(check_vars, colnames(x))
     stop(red("The following formula variables do not appear in data set.\n\t",
              paste(setdiff(check_vars, colnames(x)), collapse = "\n\t"),
              sep = ""))
@@ -124,4 +133,22 @@ make_formula <- function(dep_vars, indep_vars, cond_vars = NULL) {
   as.formula(ret)
 }
 
-
+#' Make a description of the variables in the formula.
+#'
+#' @param x a data.frame containing the variable samples.
+#' @param form the formula describing the model.
+#' @importFrom crayon red
+#' @export
+make_variable_desc <- function(x, form) {
+  fd <- form_desc(xf, form)
+  var_desc <- data.frame(var_name = unlist(fd),
+    role = c(rep("dependent", length(fd$dep)),
+             rep("independent", length(fd$indep)),
+             rep("conditional", length(fd$cond))))
+  var_desc$class <- vapply(var_desc$var_name, function(vn) class(xf[[vn]])[1],
+                           NA_character_)
+  var_desc$ordered<- vapply(var_desc$var_name, is.ordered, NA)
+  var_desc$levels <- lapply(var_desc$var_name, function(vn) levels(xf[[vn]]))
+  rownames(var_desc) <- NULL
+  var_desc
+}

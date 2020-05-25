@@ -4,7 +4,7 @@
 \alias{form_desc}
 \title{Get a Description of a formula Object}
 \usage{
-form_desc(x, form, lhs_must_appear = FALSE)
+form_desc(x, form, lhs_must_appear = FALSE, exclude_intercept = TRUE)
 }
 \arguments{
 \item{x}{a data.frame.}
@@ -13,6 +13,9 @@ form_desc(x, form, lhs_must_appear = FALSE)
 
 \item{lhs_must_appear}{should we stop if an lhs variable doesn't appear in 
 the data? Default FALSE.}
+
+\item{exclude_intercept}{should the intercept be included as a variable 
+to check? Default FALSE.}
 }
 \description{
 Get a Description of a formula Object
