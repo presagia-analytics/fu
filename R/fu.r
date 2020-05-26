@@ -140,15 +140,15 @@ make_formula <- function(dep_vars, indep_vars, cond_vars = NULL) {
 #' @importFrom crayon red
 #' @export
 make_variable_desc <- function(x, form) {
-  fd <- form_desc(xf, form)
+  fd <- form_desc(x, form)
   var_desc <- data.frame(var_name = unlist(fd),
     role = c(rep("dependent", length(fd$dep)),
              rep("independent", length(fd$indep)),
              rep("conditional", length(fd$cond))))
-  var_desc$class <- vapply(var_desc$var_name, function(vn) class(xf[[vn]])[1],
+  var_desc$class <- vapply(var_desc$var_name, function(vn) class(x[[vn]])[1],
                            NA_character_)
   var_desc$ordered<- vapply(var_desc$var_name, is.ordered, NA)
-  var_desc$levels <- lapply(var_desc$var_name, function(vn) levels(xf[[vn]]))
+  var_desc$levels <- lapply(var_desc$var_name, function(vn) levels(x[[vn]]))
   rownames(var_desc) <- NULL
-  var_desc
+  var_desc[var_desc$name != "-1",]
 }
