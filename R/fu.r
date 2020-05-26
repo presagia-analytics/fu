@@ -150,5 +150,5 @@ make_variable_desc <- function(x, form) {
   var_desc$ordered<- vapply(var_desc$var_name, is.ordered, NA)
   var_desc$levels <- lapply(var_desc$var_name, function(vn) levels(x[[vn]]))
   rownames(var_desc) <- NULL
-  var_desc[var_desc$name != "-1",]
+  var_desc[var_desc$var_name != "-1",]
 }
