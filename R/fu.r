@@ -57,10 +57,19 @@ dep_terms <- function(form, data = NULL) {
   fa <- attributes(terms(form, data = data))
   if (fa$response == 1) {
     facs <- fa$factors
-    lht_all <- rownames(attributes(terms(form, data = data))$factors)[1]
-    ret <- all.vars(parse(text = lht_all))
+    ret <- rownames(attributes(terms(form, data = data))$factors)[1]
   }
   ret
+}
+
+#' Extract the Variables from a Character Expression
+#'
+#' @param str_expr the string expression
+#' @examples
+#' extract_vars(dep_terms(A + B + C ~ D + E + 1))
+#' @export
+extract_vars <- function(str_expr) {
+  all.vars(parse(text = str_expr))
 }
 
 un_interact <- function(x) {
@@ -141,14 +150,14 @@ make_formula <- function(dep_vars, indep_vars, cond_vars = NULL) {
 #' @export
 make_variable_desc <- function(x, form) {
   fd <- form_desc(x, form)
-  var_desc <- data.frame(var_name = unlist(fd),
+  var_desc <- data.frame(name = unlist(fd),
     role = c(rep("dependent", length(fd$dep)),
              rep("independent", length(fd$indep)),
              rep("conditional", length(fd$cond))))
-  var_desc$class <- vapply(var_desc$var_name, function(vn) class(x[[vn]])[1],
+  var_desc$class <- vapply(var_desc$name, function(vn) class(x[[vn]])[1],
                            NA_character_)
-  var_desc$ordered<- vapply(var_desc$var_name, is.ordered, NA)
-  var_desc$levels <- lapply(var_desc$var_name, function(vn) levels(x[[vn]]))
+  var_desc$ordered<- vapply(var_desc$name, is.ordered, NA)
+  var_desc$levels <- lapply(var_desc$name, function(vn) levels(x[[vn]]))
   rownames(var_desc) <- NULL
-  var_desc[var_desc$var_name != "-1",]
+  var_desc[var_desc$name != "-1",]
 }

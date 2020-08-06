@@ -3,6 +3,7 @@
 export(cond_terms)
 export(dep_terms)
 export(expand_formula)
+export(extract_vars)
 export(form_desc)
 export(indep_terms)
 export(make_formula)
